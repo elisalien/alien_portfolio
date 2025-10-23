@@ -10,6 +10,7 @@ const RetroPortfolio = () => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [time, setTime] = useState(new Date());
+  const [showWelcome, setShowWelcome] = useState(true);
 
   React.useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -495,21 +496,101 @@ const RetroPortfolio = () => {
         );
       })}
 
+      {/* Welcome Window */}
+      {showWelcome && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[60] bg-black bg-opacity-50"
+          onClick={() => setShowWelcome(false)}
+        >
+          <div
+            className="shadow-2xl rounded-lg overflow-hidden animate-pulse-slow"
+            style={{
+              background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.98) 0%, rgba(26, 26, 36, 0.98) 50%, rgba(30, 30, 30, 0.98) 100%)',
+              border: '2px solid rgba(232, 196, 216, 0.6)',
+              backdropFilter: 'blur(10px)',
+              width: '400px',
+              maxWidth: '90vw'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-3 py-2"
+              style={{
+                background: 'linear-gradient(180deg, rgba(232, 196, 216, 0.3) 0%, rgba(232, 196, 216, 0.1) 100%)',
+                borderBottom: '1px solid rgba(232, 196, 216, 0.3)',
+                backdropFilter: 'blur(10px)'
+              }}>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-300 font-medium text-sm">Bienvenue.exe</span>
+                <button
+                  onClick={() => setShowWelcome(false)}
+                  className="w-6 h-6 bg-[#2a2a2a] flex items-center justify-center text-gray-400 hover:bg-[#E8C4D8] hover:text-white rounded transition-all"
+                  onMouseEnter={(e) => e.target.style.boxShadow = '0 0 20px rgba(232, 196, 216, 0.6)'}
+                  onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 text-center">
+              <div className="mb-6">
+                <div className="text-6xl mb-4">👽</div>
+                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+                  Bienvenue !
+                </h2>
+                <p className="text-gray-300 text-lg mb-2">
+                  Clic START
+                </p>
+                <p className="text-gray-400 text-sm">
+                  pour explorer le portfolio
+                </p>
+              </div>
+              <button
+                onClick={() => setShowWelcome(false)}
+                className="px-6 py-3 font-medium text-white rounded transition-all"
+                style={{
+                  background: 'rgba(232, 196, 216, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'rgba(232, 196, 216, 1)';
+                  e.target.style.boxShadow = '0 0 25px rgba(232, 196, 216, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(232, 196, 216, 0.8)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                OK, Compris !
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Taskbar */}
       <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-2 py-2 z-50"
-        style={{ 
+        style={{
           background: '#1e1e1e',
           borderTop: '1px solid #3a3a3a'
         }}>
         
         <button
           onClick={() => setStartMenuOpen(!startMenuOpen)}
-          className="px-4 py-2 font-medium text-gray-300 hover:bg-[#2a2a2a] rounded transition-all"
+          className="px-4 py-2 font-medium text-gray-300 hover:bg-[#2a2a2a] rounded transition-all start-button-glow"
           style={{
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            animation: 'pinkGlow 2s ease-in-out infinite',
+            boxShadow: '0 0 20px rgba(232, 196, 216, 0.6), 0 0 40px rgba(232, 196, 216, 0.3)'
           }}
-          onMouseEnter={(e) => e.target.style.boxShadow = '0 0 15px rgba(139, 200, 255, 0.4)'}
-          onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
+          onMouseEnter={(e) => {
+            e.target.style.boxShadow = '0 0 30px rgba(232, 196, 216, 0.8), 0 0 60px rgba(232, 196, 216, 0.5)';
+            e.target.style.background = '#2a2a2a';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.boxShadow = '0 0 20px rgba(232, 196, 216, 0.6), 0 0 40px rgba(232, 196, 216, 0.3)';
+            e.target.style.background = 'transparent';
+          }}
         >
           <span className="flex items-center gap-2">
             <span>▶</span>
@@ -581,13 +662,22 @@ const RetroPortfolio = () => {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
-        
+
         * {
           cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M0,0 L0,12 L3,9 L5,14 L7,13 L5,8 L9,8 Z" fill="white" stroke="black"/></svg>'), auto;
         }
-        
+
         button, a {
           cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M2,2 L2,6 L6,6 L6,10 L10,10 L10,14 L14,14 L14,2 Z" fill="white" stroke="black"/></svg>'), pointer !important;
+        }
+
+        @keyframes pinkGlow {
+          0%, 100% {
+            box-shadow: 0 0 20px rgba(232, 196, 216, 0.6), 0 0 40px rgba(232, 196, 216, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 30px rgba(232, 196, 216, 0.9), 0 0 60px rgba(232, 196, 216, 0.5), 0 0 80px rgba(232, 196, 216, 0.2);
+          }
         }
       `}</style>
     </div>
