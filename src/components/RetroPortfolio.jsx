@@ -11,6 +11,17 @@ const RetroPortfolio = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [time, setTime] = useState(new Date());
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détection mobile
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   React.useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -116,7 +127,50 @@ const RetroPortfolio = () => {
 
   const Window = ({ id, title, icon, children }) => {
     const pos = windowPositions[id] || { x: 100, y: 100 };
-    
+
+    // Style mobile : plein écran
+    if (isMobile) {
+      return (
+        <div
+          className="fixed inset-0 shadow-2xl flex flex-col"
+          style={{
+            background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.98) 0%, rgba(26, 26, 36, 0.98) 50%, rgba(30, 30, 30, 0.98) 100%)',
+            backdropFilter: 'blur(10px)',
+            zIndex: openWindows.indexOf(id) + 10,
+          }}
+        >
+          <div className="px-4 py-3 flex items-center justify-between"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+              borderBottom: '2px solid rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">{icon}</span>
+              <span className="text-gray-200 font-medium text-base">{title}</span>
+            </div>
+            <button
+              onClick={() => closeWindow(id)}
+              className="w-10 h-10 bg-[#E8C4D8] flex items-center justify-center text-white hover:bg-[#D4B0C4] rounded-lg transition-all shadow-lg"
+              style={{
+                boxShadow: '0 0 20px rgba(232, 196, 216, 0.4)'
+              }}
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4"
+            style={{
+              background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(26, 26, 36, 0.95) 50%, rgba(30, 30, 30, 0.95) 100%)',
+            }}>
+            {children}
+          </div>
+        </div>
+      );
+    }
+
+    // Style desktop : fenêtre draggable
     return (
       <div
         className="absolute shadow-2xl rounded-lg overflow-hidden"
@@ -130,8 +184,8 @@ const RetroPortfolio = () => {
           maxWidth: '90vw',
           maxHeight: '80vh',
           zIndex: openWindows.indexOf(id) + 10,
-          boxShadow: dragging === id 
-            ? '0 0 40px rgba(100, 150, 230, 0.6), 0 0 80px rgba(100, 150, 230, 0.3)' 
+          boxShadow: dragging === id
+            ? '0 0 40px rgba(100, 150, 230, 0.6), 0 0 80px rgba(100, 150, 230, 0.3)'
             : '0 8px 32px rgba(0, 0, 0, 0.4)',
           transition: 'box-shadow 0.3s ease'
         }}
@@ -204,12 +258,12 @@ const RetroPortfolio = () => {
         }}></div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-16 pb-20">
-        
-        <div className="max-w-2xl w-full space-y-6">
+      <div className={`relative z-10 flex items-center justify-center min-h-screen px-4 ${isMobile ? 'py-8 pb-20' : 'py-16 pb-20'}`}>
+
+        <div className={`w-full space-y-6 ${isMobile ? 'max-w-full' : 'max-w-2xl'}`}>
           {/* About Window */}
-          <div className="shadow-2xl max-w-[500px] mx-auto rounded-lg overflow-hidden"
-            style={{ 
+          <div className={`shadow-2xl mx-auto rounded-lg overflow-hidden ${isMobile ? 'max-w-full' : 'max-w-[500px]'}`}
+            style={{
               background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(26, 26, 36, 0.95) 50%, rgba(30, 30, 30, 0.95) 100%)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)'
@@ -224,17 +278,17 @@ const RetroPortfolio = () => {
               <span className="text-gray-300 font-medium text-sm">About.exe</span>
             </div>
 
-            <div className="p-8">
-              <h1 className="text-center text-3xl font-bold mb-2 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+            <div className={`${isMobile ? 'p-5' : 'p-8'}`}>
+              <h1 className={`text-center font-bold mb-2 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
                 Elisa Bernard
               </h1>
 
-              <div className="text-sm text-gray-400 mb-6 text-center space-y-1">
+              <div className={`text-gray-400 mb-6 text-center space-y-1 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                 <p>Graphiste / Motion Designer 2D/3D</p>
                 <p>Illustratrice / VJ / AI Artist</p>
               </div>
 
-              <div className="space-y-4 text-gray-300 text-sm leading-relaxed">
+              <div className={`space-y-4 text-gray-300 leading-relaxed ${isMobile ? 'text-xs' : 'text-sm'}`}>
                 <p>
                   Besoin d'un clip vidéo percutant, d'un VJing live immersif ou d'un show audiovisuel sur mesure ? 
                   Je transforme vos visions en expériences visuelles mémorables.
@@ -251,13 +305,13 @@ const RetroPortfolio = () => {
           </div>
 
           {/* Contact Window */}
-          <div className="shadow-2xl max-w-[500px] mx-auto rounded-lg overflow-hidden"
-            style={{ 
+          <div className={`shadow-2xl mx-auto rounded-lg overflow-hidden ${isMobile ? 'max-w-full' : 'max-w-[500px]'}`}
+            style={{
               background: 'linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(26, 26, 36, 0.95) 50%, rgba(30, 30, 30, 0.95) 100%)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)'
             }}>
-            
+
             <div className="px-3 py-2"
               style={{
                 background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
@@ -267,19 +321,19 @@ const RetroPortfolio = () => {
               <span className="text-gray-300 font-medium text-sm">Contact.exe</span>
             </div>
 
-            <div className="p-8">
-              <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+            <div className={`${isMobile ? 'p-5' : 'p-8'}`}>
+              <h2 className={`font-bold mb-6 text-center bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent ${isMobile ? 'text-xl' : 'text-2xl'}`}>
                 Contact
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-gray-400 mb-2 text-sm">Nom</label>
-                  <input 
+                  <label className={`block text-gray-400 mb-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>Nom</label>
+                  <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-2 text-gray-200 focus:outline-none rounded border"
+                    className={`w-full text-gray-200 focus:outline-none rounded border ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-2'}`}
                     style={{
                       background: 'rgba(42, 42, 42, 0.6)',
                       backdropFilter: 'blur(10px)',
@@ -297,12 +351,12 @@ const RetroPortfolio = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-2 text-sm">Email</label>
-                  <input 
+                  <label className={`block text-gray-400 mb-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>Email</label>
+                  <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-2 text-gray-200 focus:outline-none rounded border"
+                    className={`w-full text-gray-200 focus:outline-none rounded border ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-2'}`}
                     style={{
                       background: 'rgba(42, 42, 42, 0.6)',
                       backdropFilter: 'blur(10px)',
@@ -320,12 +374,12 @@ const RetroPortfolio = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-2 text-sm">Message</label>
-                  <textarea 
+                  <label className={`block text-gray-400 mb-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>Message</label>
+                  <textarea
                     rows="4"
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full px-4 py-2 text-gray-200 focus:outline-none resize-none rounded border"
+                    className={`w-full text-gray-200 focus:outline-none resize-none rounded border ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-2'}`}
                     style={{
                       background: 'rgba(42, 42, 42, 0.6)',
                       backdropFilter: 'blur(10px)',
@@ -342,9 +396,9 @@ const RetroPortfolio = () => {
                     }}
                   ></textarea>
                 </div>
-                <button 
+                <button
                   onClick={handleSubmit}
-                  className="px-6 py-2 font-medium text-sm text-white rounded transition-all"
+                  className={`font-medium text-white rounded transition-all ${isMobile ? 'px-5 py-2.5 text-sm w-full' : 'px-6 py-2 text-sm'}`}
                   style={{
                     background: 'rgba(232, 196, 216, 0.8)',
                     backdropFilter: 'blur(10px)',
@@ -374,10 +428,10 @@ const RetroPortfolio = () => {
           <Window key={windowId} id={windowId} title={win.title} icon={win.icon}>
             {windowId === 'portfolio' && (
               <div>
-                <h2 className="text-xl font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+                <h2 className={`font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent ${isMobile ? 'text-lg' : 'text-xl'}`}>
                   Portfolio
                 </h2>
-                <div className="grid grid-cols-3 gap-4">
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-3'}`}>
                   {win.images.map((img, i) => (
                     <div 
                       key={i}
@@ -410,10 +464,10 @@ const RetroPortfolio = () => {
             
             {(windowId === 'vjing' || windowId === 'video') && (
               <div>
-                <h2 className="text-xl font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+                <h2 className={`font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent ${isMobile ? 'text-lg' : 'text-xl'}`}>
                   {windowId === 'vjing' ? 'VJing' : 'Création Vidéo'}
                 </h2>
-                <div className="grid grid-cols-3 gap-4">
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
                   {win.videos.map((videoId, i) => (
                     <div key={i} className="rounded overflow-hidden" style={{ border: '2px solid #B8C5D6' }}>
                       <iframe
@@ -435,15 +489,15 @@ const RetroPortfolio = () => {
             
             {windowId === 'ia' && (
               <div>
-                <h2 className="text-xl font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent">
+                <h2 className={`font-semibold mb-6 bg-gradient-to-r from-[#E8C4D8] to-[#B8C5D6] bg-clip-text text-transparent ${isMobile ? 'text-lg' : 'text-xl'}`}>
                   IA Gallery
                 </h2>
                 <div className="mb-6 text-center">
-                  <a 
+                  <a
                     href={win.tumblrLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2 font-medium text-white rounded transition-all"
+                    className={`inline-flex items-center gap-2 font-medium text-white rounded transition-all ${isMobile ? 'px-4 py-2 text-sm' : 'px-5 py-2'}`}
                     style={{
                       background: 'rgba(184, 197, 214, 0.8)',
                       backdropFilter: 'blur(10px)',
@@ -462,7 +516,7 @@ const RetroPortfolio = () => {
                     <span>Voir plus sur Tumblr</span>
                   </a>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-3'}`}>
                   {win.images.map((img, i) => (
                     <div 
                       key={i}
@@ -569,15 +623,15 @@ const RetroPortfolio = () => {
       )}
 
       {/* Taskbar */}
-      <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-2 py-2 z-50"
+      <div className={`fixed bottom-0 left-0 right-0 flex items-center justify-between z-50 ${isMobile ? 'px-3 py-3' : 'px-2 py-2'}`}
         style={{
           background: '#1e1e1e',
           borderTop: '1px solid #3a3a3a'
         }}>
-        
+
         <button
           onClick={() => setStartMenuOpen(!startMenuOpen)}
-          className="px-4 py-2 font-medium text-gray-300 hover:bg-[#2a2a2a] rounded transition-all start-button-glow"
+          className={`font-medium text-gray-300 hover:bg-[#2a2a2a] rounded transition-all start-button-glow ${isMobile ? 'px-5 py-3' : 'px-4 py-2'}`}
           style={{
             transition: 'all 0.3s ease',
             animation: 'pinkGlow 2s ease-in-out infinite',
@@ -593,51 +647,62 @@ const RetroPortfolio = () => {
           }}
         >
           <span className="flex items-center gap-2">
-            <span>▶</span>
-            <span className="text-sm">START</span>
+            <span className={isMobile ? 'text-lg' : ''}>▶</span>
+            <span className={isMobile ? 'text-base font-bold' : 'text-sm'}>START</span>
           </span>
         </button>
 
-        <div className="flex-1 flex gap-2 ml-4">
-          {openWindows.map(windowId => (
-            <div
-              key={windowId}
-              className="px-3 py-2 bg-[#2a2a2a] flex items-center gap-2 text-sm text-gray-300 rounded border border-[#3a3a3a]"
-            >
-              <span>{windows[windowId].icon}</span>
-              <span className="max-w-[120px] truncate">{windows[windowId].title}</span>
-            </div>
-          ))}
-        </div>
+        {!isMobile && (
+          <div className="flex-1 flex gap-2 ml-4">
+            {openWindows.map(windowId => (
+              <div
+                key={windowId}
+                className="px-3 py-2 bg-[#2a2a2a] flex items-center gap-2 text-sm text-gray-300 rounded border border-[#3a3a3a]"
+              >
+                <span>{windows[windowId].icon}</span>
+                <span className="max-w-[120px] truncate">{windows[windowId].title}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <div className="px-3 py-2 text-sm text-gray-400">
+        {isMobile && openWindows.length > 0 && (
+          <div className="flex-1 flex justify-center ml-4">
+            <div className="px-3 py-1.5 bg-[#2a2a2a] flex items-center gap-2 text-xs text-gray-300 rounded border border-[#3a3a3a]">
+              <span>{windows[openWindows[openWindows.length - 1]].icon}</span>
+              <span className="max-w-[100px] truncate">{windows[openWindows[openWindows.length - 1]].title}</span>
+            </div>
+          </div>
+        )}
+
+        <div className={`text-gray-400 ${isMobile ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'}`}>
           {time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
 
       {/* Start Menu */}
       {startMenuOpen && (
-        <div 
-          className="fixed bottom-12 left-2 w-64 z-50 rounded-lg overflow-hidden shadow-2xl"
-          style={{ 
+        <div
+          className={`fixed z-50 rounded-lg overflow-hidden shadow-2xl ${isMobile ? 'inset-x-4 bottom-16 max-h-[70vh]' : 'bottom-12 left-2 w-64'}`}
+          style={{
             background: '#1e1e1e',
             border: '1px solid #3a3a3a'
           }}
         >
-          <div className="text-gray-200 p-4 flex items-center gap-3"
+          <div className={`text-gray-200 flex items-center gap-3 ${isMobile ? 'p-5' : 'p-4'}`}
             style={{
               background: '#252525',
               borderBottom: '1px solid #3a3a3a'
             }}>
-            <div className="w-10 h-10 rounded bg-gradient-to-br from-[#E8C4D8] to-[#B8C5D6] flex items-center justify-center text-[9px] text-white font-bold leading-tight">
+            <div className={`rounded bg-gradient-to-br from-[#E8C4D8] to-[#B8C5D6] flex items-center justify-center text-white font-bold leading-tight ${isMobile ? 'w-12 h-12 text-[10px]' : 'w-10 h-10 text-[9px]'}`}>
               LOGO<br/>200x200
             </div>
             <div>
-              <div className="text-base font-medium">Elisa Bernard</div>
-              <div className="text-xs text-gray-400">Portfolio</div>
+              <div className={`font-medium ${isMobile ? 'text-lg' : 'text-base'}`}>Elisa Bernard</div>
+              <div className={`text-gray-400 ${isMobile ? 'text-sm' : 'text-xs'}`}>Portfolio</div>
             </div>
           </div>
-          <div className="p-2 space-y-1">
+          <div className={`space-y-1 overflow-y-auto ${isMobile ? 'p-3' : 'p-2'}`}>
             {Object.entries(windows).map(([key, win]) => (
               <button
                 key={key}
@@ -645,15 +710,15 @@ const RetroPortfolio = () => {
                   openWindow(key);
                   setStartMenuOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-[#2a2a2a] text-gray-300 flex items-center gap-3 transition-all rounded"
+                className={`w-full text-left hover:bg-[#2a2a2a] text-gray-300 flex items-center gap-3 transition-all rounded ${isMobile ? 'px-5 py-4' : 'px-4 py-3'}`}
                 style={{
                   transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => e.target.style.boxShadow = 'inset 0 0 20px rgba(139, 200, 255, 0.2)'}
                 onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
               >
-                <span className="text-lg">{win.icon}</span>
-                <span className="text-sm font-medium">{win.title}</span>
+                <span className={isMobile ? 'text-2xl' : 'text-lg'}>{win.icon}</span>
+                <span className={`font-medium ${isMobile ? 'text-base' : 'text-sm'}`}>{win.title}</span>
               </button>
             ))}
           </div>
